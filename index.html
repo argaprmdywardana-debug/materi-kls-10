@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSmart Class 10 - Bank Soal & Rangkuman SMA/SMK</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* Custom Styling untuk 3D Card Flip Animation */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        /* Scrollbar Halus */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-indigo-600 p-2 rounded-lg shadow font-bold text-xl">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl leading-tight">EduSmart X</h1>
+                    <p class="text-xs text-indigo-200">Bank Soal & Rangkuman Kelas 10 SMA/SMK</p>
+                </div>
+            </div>
+
+            <!-- Menus / Tabs -->
+            <nav class="hidden md:flex space-x-2 bg-indigo-700/50 p-1 rounded-xl">
+                <button onclick="switchTab('rangkuman')" id="tab-rangkuman" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-indigo-600 shadow">
+                    <i class="fa-solid fa-book-open mr-2"></i>Rangkuman
+                </button>
+                <button onclick="switchTab('flashcards')" id="tab-flashcards" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all text-indigo-100 hover:text-white hover:bg-indigo-600/50">
+                    <i class="fa-solid fa-clone mr-2"></i>Flashcard
+                </button>
+                <button onclick="switchTab('kuis')" id="tab-kuis" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all text-indigo-100 hover:text-white hover:bg-indigo-600/50">
+                    <i class="fa-solid fa-list-check mr-2"></i>Kuis Interactive
+                </button>
+            </nav>
+        </div>
+
+        <!-- Mobile Nav Bottom Bar -->
+        <div class="md:hidden flex justify-around bg-indigo-700 py-2 border-t border-indigo-500">
+            <button onclick="switchTab('rangkuman')" id="mob-tab-rangkuman" class="mob-tab-btn flex flex-col items-center text-white text-xs">
+                <i class="fa-solid fa-book-open text-base mb-1"></i>Rangkuman
+            </button>
+            <button onclick="switchTab('flashcards')" id="mob-tab-flashcards" class="mob-tab-btn flex flex-col items-center text-indigo-200 text-xs">
+                <i class="fa-solid fa-clone text-base mb-1"></i>Flashcard
+            </button>
+            <button onclick="switchTab('kuis')" id="mob-tab-kuis" class="mob-tab-btn flex flex-col items-center text-indigo-200 text-xs">
+                <i class="fa-solid fa-list-check text-base mb-1"></i>Kuis
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- Notifikasi Toast -->
+        <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-slate-700">
+            <i id="toast-icon" class="fa-solid fa-circle-info text-indigo-400"></i>
+            <span id="toast-message" class="text-sm font-medium">Pesan Notifikasi</span>
+        </div>
+
+        <!-- SEKSI 1: RANGKUMAN PEMBELAJARAN -->
+        <section id="sec-rangkuman" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Catatan & Rangkuman Materi</h2>
+                    <p class="text-sm text-slate-500">Kumpulkan dan pelajari rangkuman mata pelajaran Kelas 10 SMA/SMK.</p>
+                </div>
+                <button onclick="openModal('modal-rangkuman')" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 rounded-xl shadow font-sm transition-all">
+                    <i class="fa-solid fa-plus mr-2"></i>Tambah Rangkuman
+                </button>
+            </div>
+
+            <!-- Filter Kategori Materi -->
+            <div class="flex flex-wrap gap-2 items-center text-sm">
+                <span class="text-slate-500 font-medium mr-2"><i class="fa-solid fa-filter mr-1"></i> Filter:</span>
+                <button onclick="filterMateri('semua')" class="filter-btn active-filter px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium">Semua</button>
+                <button onclick="filterMateri('Matematika')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100">Matematika</button>
+                <button onclick="filterMateri('Informatika')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100">Informatika / Pemrograman</button>
+                <button onclick="filterMateri('Bahasa Inggris')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100">Bahasa Inggris</button>
+                <button onclick="filterMateri('Fisika')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100">Fisika</button>
+            </div>
+
+            <!-- Container Grid Rangkuman -->
+            <div id="container-rangkuman" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Rangkuman Card (Di-render melalui JS) -->
+            </div>
+        </section>
+
+
+        <!-- SEKSI 2: KARTU HAFALAN (FLASHCARDS) -->
+        <section id="sec-flashcards" class="space-y-6 hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Kartu Hafalan (Flashcards 3D)</h2>
+                    <p class="text-sm text-slate-500">Klik kartu untuk melihat jawaban di balik kartu!</p>
+                </div>
+                <button onclick="openModal('modal-flashcard')" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 rounded-xl shadow font-sm transition-all">
+                    <i class="fa-solid fa-plus mr-2"></i>Buat Kartu Baru
+                </button>
+            </div>
+
+            <!-- Grid Flashcards -->
+            <div id="container-flashcards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Flashcard Items (Di-render via JS) -->
+            </div>
+        </section>
+
+
+        <!-- SEKSI 3: KUIS INTERAKTIF -->
+        <section id="sec-kuis" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Uji Pemahaman (Kuis)</h2>
+                        <p class="text-sm text-slate-500">Jawab pertanyaan pilihan ganda untuk mengukur pemahaman materi Kelas 10.</p>
+                    </div>
+                    <button onclick="openModal('modal-kuis')" class="inline-flex items-center justify-center bg-slate-800 hover:bg-slate-900 text-white font-medium px-4 py-2.5 rounded-xl shadow font-sm transition-all">
+                        <i class="fa-solid fa-plus mr-2"></i>Tambah Soal Kuis
+                    </button>
+                </div>
+            </div>
+
+            <!-- Box Kuis / Quiz Container -->
+            <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+                <!-- Header Status Kuis -->
+                <div id="quiz-header" class="bg-indigo-50 p-6 border-b border-indigo-100 flex justify-between items-center">
+                    <div>
+                        <span id="quiz-category" class="bg-indigo-200 text-indigo-800 text-xs font-semibold px-2.5 py-1 rounded-full uppercase">Matematika</span>
+                        <h3 class="text-slate-700 text-sm font-medium mt-2">Soal Ke <span id="quiz-current-num">1</span> dari <span id="quiz-total-num">5</span></h3>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-slate-500 font-medium">Skor Saat Ini</div>
+                        <div id="quiz-score" class="text-2xl font-bold text-indigo-600">0</div>
+                    </div>
+                </div>
+
+                <!-- Konten Soal Kuis -->
+                <div id="quiz-body" class="p-6 space-y-6">
+                    <h4 id="quiz-question" class="text-lg font-semibold text-slate-800 leading-relaxed">
+                        Pertanyaan kuis akan dimuat di sini...
+                    </h4>
+
+                    <!-- Pilihan Jawaban -->
+                    <div id="quiz-options" class="space-y-3">
+                        <!-- Pilihan A, B, C, D di-render melalui JS -->
+                    </div>
+                </div>
+
+                <!-- Footer / Navigasi Kuis -->
+                <div id="quiz-footer" class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                    <button id="btn-prev-quiz" onclick="prevQuestion()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 disabled:opacity-50">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Sebelumnya
+                    </button>
+                    <button id="btn-next-quiz" onclick="nextQuestion()" class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow">
+                        Berikutnya <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Hasil Akhir Kuis (Hidden by Default) -->
+                <div id="quiz-result" class="p-8 text-center space-y-4 hidden">
+                    <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800">Kuis Selesai!</h3>
+                    <p class="text-slate-600">Skor Akhir Kamu:</p>
+                    <div id="quiz-final-score" class="text-5xl font-extrabold text-indigo-600">100</div>
+                    <p id="quiz-feedback" class="text-sm font-medium text-slate-500">Luar biasa! Kamu menguasai materi dengan baik.</p>
+                    <button onclick="resetQuiz()" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-xl shadow-lg transition-all mt-4">
+                        <i class="fa-solid fa-rotate-right mr-2"></i>Ulangi Kuis
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER PROYEK SMK -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500 space-y-2">
+            <p class="font-semibold text-slate-700">&copy; 2026 EduSmart X - Proyek Media Pembelajaran SMK Digital</p>
+            <p class="text-xs">Dioptimalkan untuk Github Pages (100% Client-Side Single File)</p>
+        </div>
+    </footer>
+
+
+    <!-- MODAL 1: TAMBAH RANGKUMAN -->
+    <div id="modal-rangkuman" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-800">Tambah Rangkuman Pembelajaran</h3>
+                <button onclick="closeModal('modal-rangkuman')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="form-rangkuman" onsubmit="saveRangkuman(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Mata Pelajaran</label>
+                    <select id="rangkuman-mapel" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                        <option value="Matematika">Matematika</option>
+                        <option value="Informatika">Informatika / Pemrograman</option>
+                        <option value="Bahasa Inggris">Bahasa Inggris</option>
+                        <option value="Fisika">Fisika</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Judul Topik / Bab</label>
+                    <input type="text" id="rangkuman-judul" placeholder="Contoh: Logika Matematika & Tabel Kebenaran" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Isi Rangkuman Materi</label>
+                    <textarea id="rangkuman-isi" rows="4" placeholder="Tulis rangkuman ringkas materi di sini..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required></textarea>
+                </div>
+                
+                <!-- Opsi Generator AI Simulasi -->
+                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-3">
+                    <input type="checkbox" id="auto-generate-ai" class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                    <label for="auto-generate-ai" class="text-xs text-indigo-900 font-medium">
+                        <i class="fa-solid fa-wand-magic-sparkles text-indigo-600 mr-1"></i> Auto-Generate Flashcard & Soal Kuis dari rangkuman ini!
+                    </label>
+                </div>
+
+                <div class="flex justify-end space-x-2 border-t pt-3">
+                    <button type="button" onclick="closeModal('modal-rangkuman')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Batal</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 2: TAMBAH FLASHCARD -->
+    <div id="modal-flashcard" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-800">Buat Flashcard Baru</h3>
+                <button onclick="closeModal('modal-flashcard')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="form-flashcard" onsubmit="saveFlashcard(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Mata Pelajaran</label>
+                    <select id="flash-mapel" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                        <option value="Matematika">Matematika</option>
+                        <option value="Informatika">Informatika / Pemrograman</option>
+                        <option value="Bahasa Inggris">Bahasa Inggris</option>
+                        <option value="Fisika">Fisika</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Pertanyaan / Istilah (Sisi Depan)</label>
+                    <input type="text" id="flash-depan" placeholder="Contoh: Apa fungsi sintaks HTML <a>?" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Jawaban / Penjelasan (Sisi Belakang)</label>
+                    <textarea id="flash-belakang" rows="3" placeholder="Contoh: Digunakan untuk membuat hyperlink ke halaman lain." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 border-t pt-3">
+                    <button type="button" onclick="closeModal('modal-flashcard')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Batal</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow">Simpan Kartu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 3: TAMBAH SOAL KUIS -->
+    <div id="modal-kuis" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-800">Tambah Soal Kuis</h3>
+                <button onclick="closeModal('modal-kuis')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="form-kuis" onsubmit="saveKuis(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Mata Pelajaran</label>
+                    <select id="kuis-mapel" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                        <option value="Matematika">Matematika</option>
+                        <option value="Informatika">Informatika</option>
+                        <option value="Bahasa Inggris">Bahasa Inggris</option>
+                        <option value="Fisika">Fisika</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Pertanyaan Soal</label>
+                    <textarea id="kuis-pertanyaan" rows="2" placeholder="Tuliskan pertanyaan kuis..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required></textarea>
+                </div>
+                <!-- Opsi Jawaban -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-600">Pilihan Jawaban</label>
+                    <input type="text" id="kuis-opt-0" placeholder="Pilihan A" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" required>
+                    <input type="text" id="kuis-opt-1" placeholder="Pilihan B" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" required>
+                    <input type="text" id="kuis-opt-2" placeholder="Pilihan C" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" required>
+                    <input type="text" id="kuis-opt-3" placeholder="Pilihan D" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Jawaban Benar</label>
+                    <select id="kuis-jawaban-benar" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                        <option value="0">Pilihan A</option>
+                        <option value="1">Pilihan B</option>
+                        <option value="2">Pilihan C</option>
+                        <option value="3">Pilihan D</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2 border-t pt-3">
+                    <button type="button" onclick="closeModal('modal-kuis')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Batal</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow">Simpan Soal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC (VANILLA JS) -->
+    <script>
+        // ==========================================
+        // 1. INITIAL DATA & LOCALSTORAGE SETUP
+        // ==========================================
+
+        const defaultRangkuman = [
+            {
+                id: 1,
+                mapel: "Informatika",
+                judul: "Pengenalan Algoritma & Pemrograman",
+                isi: "Algoritma adalah urutan langkah logis untuk menyelesaikan masalah. Struktur dasarnya meliputi Runtunan (Sequential), Pemilihan (Selection/Branching), dan Pengulangan (Looping)."
+            },
+            {
+                id: 2,
+                mapel: "Matematika",
+                judul: "Persamaan dan Pertidaksamaan Kuadrat",
+                isi: "Bentuk umum persamaan kuadrat adalah ax² + bx + c = 0. Akar-akar dapat dicari dengan rumus ABC: x = (-b ± √(b² - 4ac)) / 2a."
+            },
+            {
+                id: 3,
+                mapel: "Bahasa Inggris",
+                judul: "Simple Present & Present Continuous Tense",
+                isi: "Simple Present digunakan untuk kebiasaan/fakta umum (S + V1/V-s/es). Present Continuous digunakan untuk aksi yang sedang berlangsung (S + am/is/are + V-ing)."
+            }
+        ];
+
+        const defaultFlashcards = [
+            {
+                id: 1,
+                mapel: "Informatika",
+                depan: "Apa fungsi tag <a> pada HTML?",
+                belakang: "Digunakan untuk membuat Hyperlink (tautan) antar halaman web."
+            },
+            {
+                id: 2,
+                mapel: "Matematika",
+                depan: "Berapa hasil dari 2³ + 4² ?",
+                belakang: "8 + 16 = 24"
+            },
+            {
+                id: 3,
+                mapel: "Bahasa Inggris",
+                depan: "Apa antonim dari kata 'Ancient'?",
+                belakang: "Modern / Contemporary"
+            }
+        ];
+
+        const defaultKuis = [
+            {
+                id: 1,
+                mapel: "Informatika",
+                pertanyaan: "Bahasa pemrograman mana yang dieksekusi langsung di browser web?",
+                pilihan: ["Python", "C++", "JavaScript", "Java"],
+                jawaban: 2
+            },
+            {
+                id: 2,
+                mapel: "Matematika",
+                pertanyaan: "Jika f(x) = 2x + 5, berapakah nilai dari f(3)?",
+                pilihan: ["11", "10", "8", "6"],
+                jawaban: 0
+            },
+            {
+                id: 3,
+                mapel: "Bahasa Inggris",
+                pertanyaan: "Choose the correct sentence: 'She ___ to school every day.'",
+                pilihan: ["go", "goes", "going", "gone"],
+                jawaban: 1
+            }
+        ];
+
+        // State Aplikasi
+        let dataRangkuman = JSON.parse(localStorage.getItem('edu_rangkuman')) || defaultRangkuman;
+        let dataFlashcards = JSON.parse(localStorage.getItem('edu_flashcards')) || defaultFlashcards;
+        let dataKuis = JSON.parse(localStorage.getItem('edu_kuis')) || defaultKuis;
+
+        let currentQuizIndex = 0;
+        let userQuizAnswers = {};
+        let currentFilter = 'semua';
+
+        // ==========================================
+        // 2. NAVIGASI TAB & UTILS
+        // ==========================================
+
+        function switchTab(tabName) {
+            // Hide all sections
+            document.getElementById('sec-rangkuman').classList.add('hidden');
+            document.getElementById('sec-flashcards').classList.add('hidden');
+            document.getElementById('sec-kuis').classList.add('hidden');
+
+            // Show selected section
+            document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+
+            // Update Desktop Nav Styling
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all text-indigo-100 hover:text-white hover:bg-indigo-600/50";
+            });
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if(activeBtn) activeBtn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-indigo-600 shadow";
+
+            // Update Mobile Nav Styling
+            document.querySelectorAll('.mob-tab-btn').forEach(btn => {
+                btn.classList.replace('text-white', 'text-indigo-200');
+            });
+            const activeMobBtn = document.getElementById(`mob-tab-${tabName}`);
+            if(activeMobBtn) activeMobBtn.classList.replace('text-indigo-200', 'text-white');
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.innerText = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('edu_rangkuman', JSON.stringify(dataRangkuman));
+            localStorage.setItem('edu_flashcards', JSON.stringify(dataFlashcards));
+            localStorage.setItem('edu_kuis', JSON.stringify(dataKuis));
+        }
+
+        // ==========================================
+        // 3. RANGKUMAN MODULE (CRUD + FILTER)
+        // ==========================================
+
+        function renderRangkuman() {
+            const container = document.getElementById('container-rangkuman');
+            container.innerHTML = '';
+
+            const filteredData = currentFilter === 'semua' 
+                ? dataRangkuman 
+                : dataRangkuman.filter(item => item.mapel.toLowerCase() === currentFilter.toLowerCase());
+
+            if(filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400">
+                        <i class="fa-regular fa-folder-open text-4xl mb-2"></i>
+                        <p>Belum ada rangkuman materi untuk kategori ini.</p>
+                    </div>`;
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all flex flex-col justify-between space-y-4";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="bg-indigo-50 text-indigo-600 text-xs font-semibold px-2.5 py-1 rounded-md border border-indigo-100">
+                                ${item.mapel}
+                            </span>
+                            <button onclick="deleteRangkuman(${item.id})" class="text-slate-300 hover:text-rose-500 transition-colors">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base mb-2">${item.judul}</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">${item.isi}</p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-50 flex justify-between items-center text-xs text-slate-400">
+                        <span><i class="fa-regular fa-clock mr-1"></i> Kelas 10</span>
+                        <span class="text-indigo-600 font-medium cursor-pointer hover:underline" onclick="generateAIFromRangkuman('${item.judul}', '${item.isi}', '${item.mapel}')">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Generate AI
+                        </span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterMateri(kategori) {
+            currentFilter = kategori;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs sm:text-sm";
+            });
+            event.target.className = "filter-btn active-filter px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium text-xs sm:text-sm";
+            renderRangkuman();
+        }
+
+        function saveRangkuman(e) {
+            e.preventDefault();
+            const mapel = document.getElementById('rangkuman-mapel').value;
+            const judul = document.getElementById('rangkuman-judul').value;
+            const isi = document.getElementById('rangkuman-isi').value;
+            const isAutoAi = document.getElementById('auto-generate-ai').checked;
+
+            const newItem = {
+                id: Date.now(),
+                mapel,
+                judul,
+                isi
+            };
+
+            dataRangkuman.unshift(newItem);
+
+            // Fitur Simulasi AI Generator
+            if (isAutoAi) {
+                generateAIFromRangkuman(judul, isi, mapel);
+            }
+
+            saveToLocalStorage();
+            renderRangkuman();
+            closeModal('modal-rangkuman');
+            document.getElementById('form-rangkuman').reset();
+            showToast('Rangkuman baru berhasil disimpan!');
+        }
+
+        function deleteRangkuman(id) {
+            dataRangkuman = dataRangkuman.filter(item => item.id !== id);
+            saveToLocalStorage();
+            renderRangkuman();
+            showToast('Rangkuman telah dihapus.');
+        }
+
+        // AI Generator (Simulasi Pembuat Soal Otomatis dari Rangkuman)
+        function generateAIFromRangkuman(judul, isi, mapel) {
+            // Flashcard AI
+            const newFlashcard = {
+                id: Date.now() + 1,
+                mapel: mapel,
+                depan: `Inti konsep: ${judul}?`,
+                belakang: isi.length > 80 ? isi.substring(0, 80) + '...' : isi
+            };
+            dataFlashcards.unshift(newFlashcard);
+
+            // Kuis AI
+            const newKuis = {
+                id: Date.now() + 2,
+                mapel: mapel,
+                pertanyaan: `Berdasarkan rangkuman "${judul}", manakah pernyataan yang tepat?`,
+                pilihan: [
+                    isi.substring(0, 45) + '...',
+                    'Konsep ini tidak relevan dengan mata pelajaran.',
+                    'Semua jawaban di atas salah.',
+                    'Hanya berlaku untuk pembelajaran tingkat lanjut.'
+                ],
+                jawaban: 0
+            };
+            dataKuis.unshift(newKuis);
+
+            saveToLocalStorage();
+            renderFlashcards();
+            renderQuizQuestion();
+            showToast('AI berhasil membuat Flashcard & Soal Kuis otomatis!');
+        }
+
+        // ==========================================
+        // 4. FLASHCARD MODULE (3D FLIP)
+        // ==========================================
+
+        function renderFlashcards() {
+            const container = document.getElementById('container-flashcards');
+            container.innerHTML = '';
+
+            if(dataFlashcards.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400">
+                        <i class="fa-regular fa-clone text-4xl mb-2"></i>
+                        <p>Belum ada kartu hafalan.</p>
+                    </div>`;
+                return;
+            }
+
+            dataFlashcards.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = "perspective-1000 h-64 w-full cursor-pointer group";
+                cardEl.onclick = function() {
+                    const inner = this.querySelector('.flash-inner');
+                    inner.classList.toggle('rotate-y-180');
+                };
+
+                cardEl.innerHTML = `
+                    <div class="flash-inner relative w-full h-full duration-500 transform-style-3d transition-transform">
+                        <!-- Depan -->
+                        <div class="absolute inset-0 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm backface-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-xs font-semibold px-2 py-1 bg-indigo-50 text-indigo-600 rounded-md">${card.mapel}</span>
+                                    <span class="text-xs text-slate-400"><i class="fa-solid fa-rotate mr-1"></i> Klik untuk flip</span>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-800 text-center mt-6">${card.depan}</h3>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-slate-400">
+                                <span>Sisi Depan</span>
+                                <button onclick="event.stopPropagation(); deleteFlashcard(${card.id})" class="text-slate-300 hover:text-rose-500">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Belakang -->
+                        <div class="absolute inset-0 bg-indigo-600 text-white rounded-2xl p-6 shadow-lg backface-hidden rotate-y-180 flex flex-col justify-between">
+                            <div>
+                                <span class="text-xs font-semibold px-2 py-1 bg-indigo-500 text-indigo-100 rounded-md">Jawaban</span>
+                                <p class="text-sm font-medium text-indigo-50 text-center mt-6 leading-relaxed">${card.belakang}</p>
+                            </div>
+                            <div class="text-right text-xs text-indigo-200">
+                                <span>Sisi Belakang</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(cardEl);
+            });
+        }
+
+        function saveFlashcard(e) {
+            e.preventDefault();
+            const mapel = document.getElementById('flash-mapel').value;
+            const depan = document.getElementById('flash-depan').value;
+            const belakang = document.getElementById('flash-belakang').value;
+
+            dataFlashcards.unshift({
+                id: Date.now(),
+                mapel,
+                depan,
+                belakang
+            });
+
+            saveToLocalStorage();
+            renderFlashcards();
+            closeModal('modal-flashcard');
+            document.getElementById('form-flashcard').reset();
+            showToast('Flashcard berhasil dibuat!');
+        }
+
+        function deleteFlashcard(id) {
+            dataFlashcards = dataFlashcards.filter(c => c.id !== id);
+            saveToLocalStorage();
+            renderFlashcards();
+            showToast('Flashcard berhasil dihapus.');
+        }
+
+        // ==========================================
+        // 5. KUIS INTERAKTIF MODULE
+        // ==========================================
+
+        function renderQuizQuestion() {
+            if(dataKuis.length === 0) {
+                document.getElementById('quiz-body').innerHTML = '<p class="text-center text-slate-400">Belum ada soal kuis yang dibuat.</p>';
+                return;
+            }
+
+            const current = dataKuis[currentQuizIndex];
+            document.getElementById('quiz-category').innerText = current.mapel;
+            document.getElementById('quiz-current-num').innerText = currentQuizIndex + 1;
+            document.getElementById('quiz-total-num').innerText = dataKuis.length;
+            document.getElementById('quiz-question').innerText = current.pertanyaan;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            current.pilihan.forEach((opt, idx) => {
+                const isSelected = userQuizAnswers[currentQuizIndex] === idx;
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all flex items-center justify-between ${
+                    isSelected 
+                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm' 
+                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                }`;
+                btn.onclick = () => selectQuizAnswer(idx);
+
+                btn.innerHTML = `
+                    <span><strong class="mr-2">${String.fromCharCode(65 + idx)}.</strong> ${opt}</span>
+                    ${isSelected ? '<i class="fa-solid fa-circle-check text-indigo-600"></i>' : ''}
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Update Navigasi Tombol
+            document.getElementById('btn-prev-quiz').disabled = currentQuizIndex === 0;
+            if(currentQuizIndex === dataKuis.length - 1) {
+                document.getElementById('btn-next-quiz').innerHTML = 'Selesai & Lihat Skor <i class="fa-solid fa-check ml-2"></i>';
+            } else {
+                document.getElementById('btn-next-quiz').innerHTML = 'Berikutnya <i class="fa-solid fa-arrow-right ml-2"></i>';
+            }
+        }
+
+        function selectQuizAnswer(index) {
+            userQuizAnswers[currentQuizIndex] = index;
+            renderQuizQuestion();
+            calculateScore();
+        }
+
+        function calculateScore() {
+            let score = 0;
+            const scorePerQuestion = 100 / dataKuis.length;
+
+            dataKuis.forEach((q, idx) => {
+                if(userQuizAnswers[idx] === q.jawaban) {
+                    score += scorePerQuestion;
+                }
+            });
+
+            document.getElementById('quiz-score').innerText = Math.round(score);
+            return Math.round(score);
+        }
+
+        function nextQuestion() {
+            if(currentQuizIndex < dataKuis.length - 1) {
+                currentQuizIndex++;
+                renderQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function prevQuestion() {
+            if(currentQuizIndex > 0) {
+                currentQuizIndex--;
+                renderQuizQuestion();
+            }
+        }
+
+        function showQuizResult() {
+            const finalScore = calculateScore();
+            document.getElementById('quiz-body').classList.add('hidden');
+            document.getElementById('quiz-footer').classList.add('hidden');
+            document.getElementById('quiz-header').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            document.getElementById('quiz-final-score').innerText = finalScore;
+
+            const feedback = document.getElementById('quiz-feedback');
+            if(finalScore >= 80) {
+                feedback.innerText = "Luar biasa! Pemahaman materi kamu sangat baik! 🔥";
+            } else if(finalScore >= 60) {
+                feedback.innerText = "Cukup baik! Tingkatkan lagi membaca rangkuman materi. 👍";
+            } else {
+                feedback.innerText = "Jangan menyerah! Pelajari kembali rangkuman dan flashcards ya. 💪";
+            }
+        }
+
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            userQuizAnswers = {};
+            document.getElementById('quiz-score').innerText = '0';
+            document.getElementById('quiz-body').classList.remove('hidden');
+            document.getElementById('quiz-footer').classList.remove('hidden');
+            document.getElementById('quiz-header').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            renderQuizQuestion();
+        }
+
+        function saveKuis(e) {
+            e.preventDefault();
+            const mapel = document.getElementById('kuis-mapel').value;
+            const pertanyaan = document.getElementById('kuis-pertanyaan').value;
+            const opt0 = document.getElementById('kuis-opt-0').value;
+            const opt1 = document.getElementById('kuis-opt-1').value;
+            const opt2 = document.getElementById('kuis-opt-2').value;
+            const opt3 = document.getElementById('kuis-opt-3').value;
+            const jawaban = parseInt(document.getElementById('kuis-jawaban-benar').value);
+
+            dataKuis.push({
+                id: Date.now(),
+                mapel,
+                pertanyaan,
+                pilihan: [opt0, opt1, opt2, opt3],
+                jawaban
+            });
+
+            saveToLocalStorage();
+            renderQuizQuestion();
+            closeModal('modal-kuis');
+            document.getElementById('form-kuis').reset();
+            showToast('Soal kuis baru berhasil ditambahkan!');
+        }
+
+        // ==========================================
+        // 6. INITIAL LOAD
+        // ==========================================
+        window.onload = function() {
+            renderRangkuman();
+            renderFlashcards();
+            renderQuizQuestion();
+        };
+    </script>
+</body>
+</html>
